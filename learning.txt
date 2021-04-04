@@ -1,0 +1,309 @@
+import pandas as pd
+import numpy as np
+import glob
+
+from pandas.core.dtypes.missing import array_equivalent
+
+
+def getDuplicateColumns(df):
+    '''
+    Get a list of duplicate columns.
+    It will iterate over all the columns in dataframe and find the columns whose contents are duplicate.
+    :param df: Dataframe object
+    :return: List of columns whose contents are duplicates.
+    '''
+    duplicateColumnNames = set()
+    # Iterate over all the columns in dataframe
+    for x in range(df.shape[1]):
+        # Select column at xth index.
+        col = df.iloc[:, x]
+        # Iterate over all the columns in DataFrame from (x+1)th index till end
+        for y in range(x + 1, df.shape[1]):
+            # Select column at yth index.
+            otherCol = df.iloc[:, y]
+            # Check if two columns at x 7 y index are equal
+            if col.equals(otherCol):
+                duplicateColumnNames.add(df.columns.values[y])
+
+    return list(duplicateColumnNames)
+
+
+def duplicate_columns(frame):
+    groups = frame.columns.to_series().groupby(frame.dtypes).groups
+    dups = []
+    for t, v in groups.items():
+        dcols = frame[v].to_dict(orient="list")
+
+        vs = dcols.values()
+        ks = dcols.keys()
+        lvs = len(vs)
+
+        for i in range(lvs):
+            for j in range(i + 1, lvs):
+                if vs[i] == vs[j]:
+                    dups.append(ks[i])
+                    break
+
+    return dups
+
+
+def main():
+    all_data = pd.DataFrame()
+
+    # # Creating an empty Dataframe with column names only
+    # output_data = pd.DataFrame(columns=['TimePoint', 'Objects', 'IDD', 'IDA', 'IAA', 'Fc', 'EAPP'])
+    #
+    # time_data = pd.DataFrame(columns=['Index', 'TimePoint'])
+
+    a = 0.12
+    d = 0.02
+    G = 1.159
+
+    for f in glob.glob("data/Xcelligence_031721_T47DM_13C3-A_ ADC_Export.xlsx"):
+        df = pd.read_excel(f, 'Cell Index', header=[1]) # ,index_col=0, na_values=['NA'], header=[1], usecols="B:M"
+        # print(df[df.columns[0]])
+
+        # size = 8
+        # list_of_dfs = (df.loc[i:i+size-1,:] for i in range(0, len(df),size))
+        # print(list_of_dfs)
+
+        # print(df[:8])
+        df.dropna(inplace=True)
+
+        # first_column = df.iloc[:, 0]
+        # print(first_column)
+
+        # inds = pd.isnull(df).any(1).nonzero()[0]
+        # print(inds)
+
+        # df.drop(df[(df['code1'] == df['code2']) & (df['count'] > 1)].index, inplace=True)
+        
+
+        # drop_index = 9,18,27,36,45,54,63,72,81,90,99,
+
+        # pred = lambda x: x in [1, 3]
+        # lambda x: (x % 9 == 0)
+        # print(x)
+
+        # df.drop(index=[lambda x: (x % 9 == 0)], inplace = True)
+
+        all_data = all_data.append(df, ignore_index=True, sort=False)
+        # print(all_data)
+        # all_data['Time(in Hour)'] = 
+        
+        # print(all_data[:25])
+        # print(all_data.groupby(level=0).mean())
+
+        # print(all_data)
+        # print(all_data.loc['A'])
+        # print(all_data.at['B', 1])
+
+        # av_column = all_data.mean(axis=0)
+        # print (av_column)
+        # av_row = all_data.iloc[:,0:2].mean(axis=1)
+        # all_data['Time(in Hour)'] = 
+        all_data['1,2'] = all_data[[1, 2]].mean(axis=1)
+        all_data['3,4'] = all_data[[3, 4]].mean(axis=1)
+        all_data['5,6'] = all_data[[5, 6]].mean(axis=1)
+        all_data['7,8'] = all_data[[7, 8]].mean(axis=1)
+        all_data['9,10'] = all_data[[9, 10]].mean(axis=1)
+        all_data['11,12'] = all_data[[11, 12]].mean(axis=1)
+
+        # print(all_data.at['A', '11,12'])
+        all_data.drop(columns=[1,2,3,4,5,6,7,8,9,10,11,12], inplace=True)
+
+        # all_data.loc['New_ID',:] = all_data.index + 15        
+
+        all_data.set_index(all_data.columns[0], inplace=True)
+
+        # print(all_data[:25])
+
+        writer = pd.ExcelWriter('data/output.xlsx')    
+
+        by_protein = all_data.groupby(level=0)
+        for state, frame in by_protein:
+            print(f"All entries for {state!r}")
+            print("------------------------")
+            # # frame.loc['New_ID',:] = range(0, 15 + len(frame))/60
+
+            # # a = range(0, len(frame), 15)
+            # # print(a)
+            # # frame.insert(0, 'Time(in Hours)', range(0, len(frame) + 15))
+            # # frame.insert(0, 'New_ID', frame.index + 15)
+
+            # # frame['New_ID']=np.arange(880,880+len(frame)+15)
+
+            # # frame.loc['New_ID',:] = frame.index + 15
+            # m=5
+            # n=20
+            # frame['New_ID'] = list(range(n, (m+1)*n, n))
+
+            # frame.reset_index('Timestamp', inplace=True, drop=True)
+            # frame.reset_index(inplace=True, drop=True)
+
+            # frame.index = range(0, len(frame), 15)
+
+            multiples_5 = [n for n in range(0, len(frame)) if n % 15 == 0]
+            print(len(frame))
+            print('Bana')
+
+            frame.reset_index(inplace=True, drop=True)
+            # df2[['open','close']] = df2[['open','close']].div(df2['prev'].values,axis=0)
+            # print(frame.index)
+            # print(frame.iloc[:, 0])
+
+            frame.reset_index(inplace=True)
+
+            # frame.rename(columns = {'index': 'Time'}, inplace = True)
+
+            # frame['newCol'] = frame.apply(lambda x: 0.25, axis=1)
+            # frame['newCol']  = 0.25
+
+            frame['index'] = frame.apply(lambda row: row['index'] * 0.25, axis=1)
+
+            frame.rename(columns = {'index': 'Time(in hours)'}, inplace = True)
+
+            # print(frame.index)
+            # frame['new'] = 
+            # frame['BoolCol'].loc[lambda x: x==True].index
+
+            # frame['new'] = [[] for _ in range(len(frame))]
+
+            # df1.apply(lambda x: x * df2[0], axis=0)
+
+            # frame.reset_index(inplace=True, drop=True)
+            # frame.reset_index(inplace=True, drop=True)
+
+            # print(len(multiples_5))
+            # print(frame.index = range(len(frame)))
+            # frame['New_ID'] = multiples_5
+
+            
+            # frame['A'] = multiples_5
+
+            print(frame, end="\n\n")
+
+            
+
+            frame.to_excel(writer, state, index=False)
+
+        
+
+        # object_df = all_data.groupby(all_data.columns, axis=1)
+        # # print(object_df)
+        # for k in object_df.groups.keys():
+        #     # print(k)
+        # #         if k != 'TimePoint':
+        # #             fc = []
+        # #             eapp = []
+        #     for row in object_df.get_group(k).itertuples():
+        #         print(row[:25])
+
+                # print(all_data[:25])
+        #                 # print(row.Index, row._1, row._2, row._3)
+
+        #                 # Append rows in Empty Dataframe by adding dictionaries
+        #                 fc_val = row._2 - (a * row._3) - (d * row._1)
+        #                 fc.append(fc_val)
+        #                 # print(fc_val)
+        #                 # return
+        #                 eapp.append(fc_val / (fc_val + (G * fc_val)))
+
+        #             # print(fc)
+        #             all_data[k + '_Fc'] = fc
+        #             all_data[k+'_EAPP'] = eapp
+
+        #     # all_data['e'] = all_data['Object 0']/all_data['Object 1']
+        #     # all_data.loc[:, 'new_col'] = all_data['A']/all_data['sum']
+
+        # total_goals = all_data.groupby(all_data.columns, axis=1)
+        # print(total_goals)
+
+        # printing the means value
+        # print(total_goals.mean())
+        # for row in all_data.itertuples():
+        #     print(row)
+
+        # for k in object_df.groups.keys():
+        #     print(k)
+            # all_data.groupby(['Animal'])
+
+        # object_df = all_data.groupby(all_data.columns, axis=1)
+        # print(object_df)
+        # for k in object_df.groups.keys():
+        #     print(k)
+            # for row in object_df.get_group(k).itertuples():
+            #     print(row)
+                # print(row.Index, row._1, row._2, row._3)
+
+        # print(df[:25])
+
+        # df.ix[df[0] >= 5] 
+
+
+        # all_nan = df.index[df.isnull().all(1)]
+        # df_list = []
+        # prev = 0
+        # for i in all_nan:
+        #     df_list.append(df[prev:i])
+        #     prev = i+1
+
+        # for i in df_list:
+        #     print(i)
+
+        # data_frame = pd.DataFrame({"a":[1,np.nan,3,np.nan,4,np.nan,5],
+        #                    "b":[1,np.nan,3,np.nan,4,np.nan,5],
+        #                    "c":[1,np.nan,3,np.nan,4,np.nan,5],
+        #                    "d":[1,np.nan,3,np.nan,4,np.nan,5],
+        #                   "e":[1,np.nan,3,np.nan,4,np.nan,5],
+        #                   "f":[1,np.nan,3,np.nan,4,np.nan,5]})
+        # print(data_frame)
+        # all_nan = data_frame.index[data_frame.isnull().all(1)]
+        # df_list = []
+        # prev = 0
+        # for i in all_nan:
+        #     df_list.append(data_frame[prev:i])
+        #     prev = i+1
+
+        # for i in df_list:
+        #     print(i)
+
+        # all_data = all_data.append(df, ignore_index=True, sort=False)
+
+        # all_data.columns = all_data.columns.str.split('.').str[0]
+        # print(all_data)
+
+    #     object_df = all_data.groupby(all_data.columns, axis=1)
+    #     # print(object_df)
+    #     for k in object_df.groups.keys():
+    #         # print(k)
+    #         if k != 'TimePoint':
+    #             fc = []
+    #             eapp = []
+    #             for row in object_df.get_group(k).itertuples():
+    #                 # print(row)
+    #                 # print(row.Index, row._1, row._2, row._3)
+
+    #                 # Append rows in Empty Dataframe by adding dictionaries
+    #                 fc_val = row._2 - (a * row._3) - (d * row._1)
+    #                 fc.append(fc_val)
+    #                 # print(fc_val)
+    #                 # return
+    #                 eapp.append(fc_val / (fc_val + (G * fc_val)))
+
+    #             # print(fc)
+    #             all_data[k + '_Fc'] = fc
+    #             all_data[k+'_EAPP'] = eapp
+
+    #     # all_data['e'] = all_data['Object 0']/all_data['Object 1']
+    #     # all_data.loc[:, 'new_col'] = all_data['A']/all_data['sum']
+
+    # print(all_data)
+    #    # now save the data frame
+    # writer = pd.ExcelWriter('data/output.xlsx')
+    # all_data.to_excel(writer, 'Sheet1', index=False)
+    writer.save()
+
+
+if __name__ == '__main__':
+    main()
