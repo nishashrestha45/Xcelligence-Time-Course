@@ -32,16 +32,16 @@ def main():
 
         writer = pd.ExcelWriter('data/output.xlsx')
 
-        by_protein = all_data.groupby(level=0)
-        for state, frame in by_protein:                     
+        by_conc = all_data.groupby(level=0)
+        for conc, frame in by_conc:                     
             frame.reset_index(inplace=True, drop=True)
             frame.index = frame.index.set_names(['Time(in hours)']) * 0.25
             
-            print(f"All entries for {state!r}")
+            print(f"All entries for {conc!r}")
             print("------------------------")
             print(frame, end="\n\n")        
 
-            frame.to_excel(writer, state, index=True)
+            frame.to_excel(writer, conc, index=True)
 
     writer.save()
 
