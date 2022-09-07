@@ -22,10 +22,12 @@ This is to generate Time Course data from Xcelligence.
 
 - Open TERMINAL on VS Code, if that is not visible vlivk on "ctrl+`" to show the hidden TERMINAL.
 
-- Install Virtual Environment on your machine in that TERMINAL.
+- If this is not the very first time you are setting up your Python Virtual Environment on your machine in that TERMINAL, then
 
     i. Run: `py -3 -m venv venv` 
 
-    ii. If you are using **Windows**, run: `source venv/Scripts/activate` or if you are using **mac**, run: `source venv/bin/activate` to activate the Python virtual environment.
+    ii. RUn `pip install -r requirements.txt`
+
+- If you already had setup your Python Virtual Environment then just activate your existing virtual environmnet by sourcing it. To source, if you are using **Windows**, run: `source venv/Scripts/activate` or if you are using **mac**, run: `source venv/bin/activate` to activate the Python virtual environment.
 
 - Run: `python extract.py` to get output on "output/output_for_<Name_of_your_Source_File>.xlsx".
