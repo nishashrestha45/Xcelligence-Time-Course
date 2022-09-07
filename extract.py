@@ -7,7 +7,7 @@ from pandas.core.dtypes.missing import array_equivalent
 
 def main():
     all_data = pd.DataFrame()
-    for f in glob.glob("data/Xcelligence_031721_T47DM_13C3-A_ ADC_Export.xlsx"):
+    for f in glob.glob("data/ADC/20220718_T47D_T3M4_8H3_Export.xlsx"):
         file_name = f.rsplit('/', 1)[1]
         # print('data/output_for_' + file_name)
         
