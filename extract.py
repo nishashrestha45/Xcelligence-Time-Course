@@ -47,7 +47,7 @@ def main():
         all_data.set_index(all_data.columns[0], inplace=True)
         # print(all_data[:25])
 
-        writer = pd.ExcelWriter('data/output.xlsx')
+        writer = pd.ExcelWriter('output/output_for_' + file_name)
 
         by_conc = all_data.groupby(level=0)
         # print(by_conc)
